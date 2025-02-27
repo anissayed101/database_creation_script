@@ -23,3 +23,10 @@ bash
 Copy
 Edit
 ./create_databases.sh db_config.csv Oracle
+
+
+echo 'export PATH=/opt/oracle/product/19c/dbhome_1/bin:$PATH' >> ~/.bashrc
+echo 'export ORACLE_HOME=/opt/oracle/product/19c/dbhome_1' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/opt/oracle/product/19c/dbhome_1/lib' >> ~/.bashrc
+source ~/.bashrc
+
