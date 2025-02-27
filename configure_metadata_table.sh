@@ -26,12 +26,13 @@ if [[ "$CONFIRM" != "yes" ]]; then
 fi
 
 # Check if file argument is provided
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <database_config_file>"
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <database_config_file> [database_type]"
     exit 1
 fi
 
 CONFIG_FILE=$1
+FILTER_DB_TYPE=$2  # Second argument (optional)
 
 # Read the file line by line, skipping comments
 while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER ADMIN_PASS PWD_TYPE PWD; do
@@ -49,6 +50,11 @@ while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER 
     ADMIN_PASS=$(echo "$ADMIN_PASS" | xargs)
     PWD_TYPE=$(echo "$PWD_TYPE" | xargs)
     PWD=$(echo "$PWD" | xargs)
+
+    # Check if we need to filter by database type
+    if [[ -n "$FILTER_DB_TYPE" && "$DB_TYPE" != "$FILTER_DB_TYPE" ]]; then
+        continue  # Skip this entry if it's not the selected DB type
+    fi
 
     # Construct the database name
     FULL_DB_NAME="${DB_NAME}_${ENV}"
@@ -76,7 +82,7 @@ while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER 
                 GRANT ALL PRIVILEGES ON $FULL_DB_NAME.* TO '$USERNAME'@'%';
                 FLUSH PRIVILEGES;"
             ;;
-        
+
         PostgreSQL)
             PGPASSWORD="$ADMIN_PASS" psql -h "${ADMIN_CONN%:*}" -p "${ADMIN_CONN##*:}" -U "$ADMIN_USER" -d postgres -c "
                 CREATE DATABASE $FULL_DB_NAME;
