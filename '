@@ -1,0 +1,11 @@
+# DatabaseType,DatabaseName,Environment,Service,Company,AdminConnString,AdminUser,AdminPassword,PasswordType,Password
+Oracle,ranger,dev,Ranger,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,random,
+Oracle,rangerkms,dev,RangerKMS,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,custom,RangerKMS@123
+Oracle,hive,dev,HiveMetastore,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,random,
+Oracle,hue,dev,Hue,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,custom,HueDB@456
+Oracle,oozie,dev,Oozie,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,random,
+Oracle,smm,dev,StreamsMessagingManager,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,custom,SMM_DB@789
+Oracle,schemareg,dev,SchemaRegistry,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,random,
+Oracle,cmserver,dev,ClouderaManagerServer,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,custom,CMServer@2024
+Oracle,reports,dev,ReportsManager,BBI,database-1-oracle-dev-test-19-ce.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521,admin,admin123,random,
+

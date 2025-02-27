@@ -1,0 +1,4 @@
+# DatabaseType,DatabaseName,Environment,Service,Company,AdminConnString,AdminUser,AdminPassword,PasswordType,Password
+MySQL,ranger,prod,Ranger,BBI,localhost:3306,root,rootPass,random,
+PostgreSQL,hive,uat,Hive,,localhost:5432,postgres,adminPass,custom,HivePass123
+Oracle,knox,dev,Knox,TechCorp,localhost:1521/XEPDB1,sys as sysdba,oraclePass,random,
