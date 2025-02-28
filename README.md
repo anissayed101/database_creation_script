@@ -164,5 +164,6 @@ If you lose them, you will need to:
 ## Contributions
 
 Feel free to contribute! Fork the repo and raise a Pull Request with improvements.
+
 Maintainer: *Anis Sayed*\
 Company: *BBI*
