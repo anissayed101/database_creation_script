@@ -6,9 +6,47 @@ generate_password() {
     echo "$pass"
 }
 
-# Warning message
+# Function to show usage and fail
+show_usage_and_exit() {
+    echo "======================================================================"
+    echo "ERROR: Missing required argument - database type."
+    echo ""
+    echo "Usage: $0 <database_config_file> <database_type>"
+    echo ""
+    echo "Available Database Types:"
+    echo "    - Oracle"
+    echo "    - MySQL"
+    echo "    - PostgreSQL"
+    echo "    - ALL (to run for all types)"
+    echo ""
+    echo "Example:"
+    echo "    ./create_databases.sh db_config.csv Oracle"
+    echo "    ./create_databases.sh db_config.csv ALL"
+    echo "======================================================================"
+    exit 1
+}
+
+# Check if required arguments are provided
+if [[ $# -lt 2 ]]; then
+    show_usage_and_exit
+fi
+
+CONFIG_FILE=$1
+FILTER_DB_TYPE=$2  # Required (Oracle, MySQL, PostgreSQL, ALL)
+
+# Warn if database type is invalid
+VALID_TYPES=("Oracle" "MySQL" "PostgreSQL" "ALL")
+if [[ ! " ${VALID_TYPES[*]} " =~ " ${FILTER_DB_TYPE} " ]]; then
+    echo "======================================================================"
+    echo "ERROR: Invalid database type: $FILTER_DB_TYPE"
+    echo "Available types are: Oracle, MySQL, PostgreSQL, ALL"
+    echo "======================================================================"
+    exit 1
+fi
+
+# Warning Message
 echo "======================================================================"
-echo "WARNING: This script will connect to the given database and create the"
+echo "WARNING: This script will connect to the given databases and create the"
 echo "specified databases, users, and grant privileges."
 echo ""
 echo "IMPORTANT: Generated passwords will be printed only once."
@@ -21,25 +59,16 @@ echo ""
 read -p "Do you want to continue? Type 'yes' to proceed, or anything else to cancel: " CONFIRM
 
 if [[ "$CONFIRM" != "yes" ]]; then
-    echo "Operation canceled. Exiting..."
+    echo "Operation canceled."
     exit 1
 fi
 
-# Check if file argument is provided
-if [[ $# -lt 1 ]]; then
-    echo "Usage: $0 <database_config_file> [database_type]"
-    exit 1
-fi
-
-CONFIG_FILE=$1
-FILTER_DB_TYPE=$2  # Second argument (optional)
-
-# Read the file line by line, skipping comments
+# Process the CSV file
 while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER ADMIN_PASS PWD_TYPE PWD; do
-    # Skip comment lines
+    # Skip commented lines
     [[ $DB_TYPE =~ ^#.* ]] && continue
 
-    # Trim spaces (handle leading/trailing spaces)
+    # Trim spaces from fields
     DB_TYPE=$(echo "$DB_TYPE" | xargs)
     DB_NAME=$(echo "$DB_NAME" | xargs)
     ENV=$(echo "$ENV" | xargs)
@@ -51,22 +80,18 @@ while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER 
     PWD_TYPE=$(echo "$PWD_TYPE" | xargs)
     PWD=$(echo "$PWD" | xargs)
 
-    # Check if we need to filter by database type
-    if [[ -n "$FILTER_DB_TYPE" && "$DB_TYPE" != "$FILTER_DB_TYPE" ]]; then
-        continue  # Skip this entry if it's not the selected DB type
+    # If filter is not ALL, skip unwanted types
+    if [[ "$FILTER_DB_TYPE" != "ALL" && "$DB_TYPE" != "$FILTER_DB_TYPE" ]]; then
+        continue
     fi
 
-    # Construct the database name
     FULL_DB_NAME="${DB_NAME}_${ENV}"
-    
-    # Construct the username
-    if [[ -z "$COMPANY" ]]; then
-        USERNAME="clouder_${ENV}_${SERVICE}"
-    else
+    if [[ -n "$COMPANY" ]]; then
         USERNAME="clouder_${ENV}_${COMPANY}_${SERVICE}"
+    else
+        USERNAME="clouder_${ENV}_${SERVICE}"
     fi
 
-    # Generate password if needed
     if [[ "$PWD_TYPE" == "random" ]]; then
         PWD=$(generate_password)
         echo "Generated password for $USERNAME: $PWD (Note this down, it won't be stored!)"
@@ -74,7 +99,7 @@ while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER 
 
     echo "Creating database: $FULL_DB_NAME for $DB_TYPE..."
 
-    case $DB_TYPE in
+    case "$DB_TYPE" in
         MySQL)
             mysql -u"$ADMIN_USER" -p"$ADMIN_PASS" -h"${ADMIN_CONN%:*}" -P"${ADMIN_CONN##*:}" -e "
                 CREATE DATABASE IF NOT EXISTS $FULL_DB_NAME;
@@ -82,23 +107,24 @@ while IFS=',' read -r DB_TYPE DB_NAME ENV SERVICE COMPANY ADMIN_CONN ADMIN_USER 
                 GRANT ALL PRIVILEGES ON $FULL_DB_NAME.* TO '$USERNAME'@'%';
                 FLUSH PRIVILEGES;"
             ;;
-
         PostgreSQL)
             PGPASSWORD="$ADMIN_PASS" psql -h "${ADMIN_CONN%:*}" -p "${ADMIN_CONN##*:}" -U "$ADMIN_USER" -d postgres -c "
                 CREATE DATABASE $FULL_DB_NAME;
                 CREATE USER $USERNAME WITH PASSWORD '$PWD';
                 GRANT ALL PRIVILEGES ON DATABASE $FULL_DB_NAME TO $USERNAME;"
             ;;
-
         Oracle)
-            sqlplus -s "$ADMIN_USER/$ADMIN_PASS@$ADMIN_CONN" <<EOF
-                CREATE USER $USERNAME IDENTIFIED BY "$PWD";
-                GRANT CONNECT, RESOURCE TO $USERNAME;
-                ALTER USER $USERNAME QUOTA UNLIMITED ON USERS;
+    sqlplus -s "$ADMIN_USER/$ADMIN_PASS@$ADMIN_CONN" <<EOF > /dev/null
+        CREATE USER $USERNAME IDENTIFIED BY "$PWD";
+        GRANT CONNECT, RESOURCE TO $USERNAME;
+        ALTER USER $USERNAME QUOTA UNLIMITED ON USERS;
 EOF
-            ;;
 
-        *)
+    echo "Database ${FULL_DB_NAME} and user ${USERNAME} created successfully."
+    echo "Generated password for ${USERNAME}: ${PWD} (Note this down, it won't be stored!)"
+    echo ""
+    ;;
+         *)
             echo "Unsupported database type: $DB_TYPE"
             ;;
     esac
@@ -110,6 +136,6 @@ echo ""
 echo "======================================================================"
 echo "All database and user creation operations are complete."
 echo "Remember: If you didn't note down the passwords, you'll have to delete"
-echo "the databases and rerun the script!"
+echo "the databases and rerun this script!"
 echo "======================================================================"
 

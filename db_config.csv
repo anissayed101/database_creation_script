@@ -1,4 +1,10 @@
 # DatabaseType,DatabaseName,Environment,Service,Company,AdminConnString,AdminUser,AdminPassword,PasswordType,Password
-MySQL,ranger,prod,Ranger,BBI,localhost:3306,root,rootPass,random,
-PostgreSQL,hive,uat,Hive,,localhost:5432,postgres,adminPass,custom,HivePass123
-Oracle,knox,dev,Knox,TechCorp,localhost:1521/XEPDB1,sys as sysdba,oraclePass,random,
+Oracle,ranger,test,Ranger,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,random,
+Oracle,rangerkms,test,RangerKMS,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,custom,RangerKMS@123
+Oracle,hive,test,HiveMetastore,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,random,
+Oracle,hue,test,Hue,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,custom,HuePass@123
+Oracle,oozie,test,Oozie,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,random,
+Oracle,smm,test,StreamsMessagingManager,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,custom,SmmPass@123
+Oracle,schemareg,test,SchemaRegistry,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,random,
+Oracle,cmserver,test,ClouderaManagerServer,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,custom,CmserverPass@123
+Oracle,reports,test,ReportsManager,BBI,database-1-oracle-19-qcb-test.cxue02aa6s1n.eu-north-1.rds.amazonaws.com:1521/DATABASE,admin,admin123,random,
