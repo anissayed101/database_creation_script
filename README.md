@@ -154,7 +154,7 @@ the databases and rerun the script!
 
 ## 9. Security Note
 
-⚠️ **Passwords are only printed once during creation. They are never stored in files or logs.**  
+**Passwords are only printed once during creation. They are never stored in files or logs.**  
 If you lose them, you will need to:
 - Drop the users manually.
 - Rerun the script to recreate the users and generate new passwords.
